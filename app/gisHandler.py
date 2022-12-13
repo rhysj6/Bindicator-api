@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import requests
 import constants
 from dateutil.parser import parse
