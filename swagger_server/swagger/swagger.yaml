@@ -1,0 +1,117 @@
+openapi: 3.0.3
+info:
+  title: Bindicator
+  description: This is an api that returns the bin days of any dorset council residential
+    UPRN
+  contact:
+    email: bindicator@rhysj6.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 2.0.0
+servers:
+- url: /
+paths:
+  /binDay:
+    get:
+      operationId: bin_day_get
+      parameters:
+      - name: uprn
+        in: query
+        description: UPRN of address
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+        example: 100041115206
+      - name: cache
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+          default: true
+      responses:
+        "200":
+          description: The bin day of the address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/binDay'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/binDay'
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    binDay:
+      type: object
+      properties:
+        collectionDate:
+          type: string
+          description: The date of the bin day
+          format: date
+        alert:
+          type: boolean
+          description: Whether or not to alert a user (will be true if the bin day
+            is within 24 hours)
+          example: false
+        bins:
+          type: array
+          example:
+          - refuse
+          - food waste
+          items:
+            type: string
+            description: The bins that are collected on this day
+        hasRefuse:
+          type: boolean
+          description: Whether or not the address has a refuse bin on the delivery
+            day
+          example: true
+        hasRecycling:
+          type: boolean
+          description: Whether or not the address has a recycling bin on the delivery
+            day
+          example: false
+        hasFoodWaste:
+          type: boolean
+          description: Whether or not the address has a food waste bin on the delivery
+            day
+          example: true
+        hasGardenWaste:
+          type: boolean
+          description: Whether or not the address has a garden waste bin on the delivery
+            day
+          example: false
+        isCached:
+          type: boolean
+          description: Whether or not the data from sourced from cache or not
+          example: true
+      example:
+        bins:
+        - refuse
+        - food waste
+        hasGardenWaste: false
+        alert: false
+        hasRefuse: true
+        hasRecycling: false
+        hasFoodWaste: true
+        collectionDate: 2000-01-23
+        isCached: true
+    cachedResponse:
+      properties:
+        response:
+          $ref: '#/components/schemas/binDay'
+        uprn:
+          type: string
+          description: This is the uprn from the request
+        expiryDateTime:
+          type: string
+          description: This is the date-time for when the cached response should be
+            discarded and a new request made
+          format: date-time
+      description: This is an internal schema for cached responses
+

@@ -1,0 +1,90 @@
+openapi: 3.0.3
+info:
+  title: Bindicator
+  description: |-
+    This is an api that returns the bin days of any dorset council residential UPRN
+  contact:
+    email: bindicator@rhysj6.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 2.0.0
+servers:
+  - url: https://api.rhysj6.com/bindicator/v2
+  - url: https://api.rhysj6.com/bindicator/latest
+
+paths:
+  /binDay:
+    get:
+      parameters:
+        - in: query
+          name: uprn
+          schema:
+            type: integer
+          required: true
+          description: UPRN of address
+          example: 100041115206
+        - in: query
+          name: cache
+          schema:
+            type: boolean
+            default: true
+          required: false
+      responses:
+        200:
+          description: The bin day of the address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/binDay'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/binDay'
+
+
+
+components:
+  schemas:
+    binDay:
+      type: object
+      properties:
+        collectionDate:
+          type: string
+          description: The date of the bin day
+          format: date
+          example: 12/01/2023
+        alert:
+          type: boolean
+          description: Whether or not to alert a user (will be true if the bin day is within 24 hours)
+          example: false
+        bins:
+          type: array
+          items:
+            type: string
+            description: The bins that are collected on this day
+          example:
+          - "refuse"
+          - "food waste"
+        
+        hasRefuse:
+          type: boolean
+          description: Whether or not the address has a refuse bin on the delivery day
+          example: true
+        hasRecycling:
+          type: boolean
+          description: Whether or not the address has a recycling bin on the delivery day
+          example: false
+        hasFoodWaste: 
+          type: boolean
+          description: Whether or not the address has a food waste bin on the delivery day
+          example: true
+        hasGardenWaste:
+          type: boolean
+          description: Whether or not the address has a garden waste bin on the delivery day
+          example: false
+          
+        isCached:
+          type: boolean
+          description: Whether or not the data from sourced from cache or not
+          example: true
+    
